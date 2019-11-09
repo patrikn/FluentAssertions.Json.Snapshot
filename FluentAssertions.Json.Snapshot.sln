@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{EB483AAC-C7A3-4167-A3EE-36CBCDD19EDE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C80C408F-5DEA-4477-83FA-C9CFFAC14011}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentAssertions.Json.Snapshot", "src\FluentAssertions.Json.Snapshot\FluentAssertions.Json.Snapshot.csproj", "{016471F3-F21B-419E-A576-3CFA303C22A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentAssertions.Json.Snapshot.UnitTest", "test\FluentAssertions.Json.Snapshot.UnitTest\FluentAssertions.Json.Snapshot.UnitTest.csproj", "{AB119D5C-8DA5-4A9D-9C36-7874941282B9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{016471F3-F21B-419E-A576-3CFA303C22A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{016471F3-F21B-419E-A576-3CFA303C22A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{016471F3-F21B-419E-A576-3CFA303C22A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{016471F3-F21B-419E-A576-3CFA303C22A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB119D5C-8DA5-4A9D-9C36-7874941282B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB119D5C-8DA5-4A9D-9C36-7874941282B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB119D5C-8DA5-4A9D-9C36-7874941282B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB119D5C-8DA5-4A9D-9C36-7874941282B9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{016471F3-F21B-419E-A576-3CFA303C22A0} = {C80C408F-5DEA-4477-83FA-C9CFFAC14011}
+		{AB119D5C-8DA5-4A9D-9C36-7874941282B9} = {EB483AAC-C7A3-4167-A3EE-36CBCDD19EDE}
+	EndGlobalSection
+EndGlobal
