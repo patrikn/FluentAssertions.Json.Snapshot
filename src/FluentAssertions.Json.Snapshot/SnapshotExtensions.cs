@@ -13,9 +13,24 @@ namespace FluentAssertions.Json.Snapshot
         public static void MatchSnapshot(this ObjectAssertions assertions,
             JsonSerializer serializer = null, [CallerFilePath] string filePath = null)
         {
-            new SnapshotMatcher(new Snapshotter(filePath, new StackTrace()))
-                .Match(assertions, serializer, filePath);
+            // ReSharper disable once ExplicitCallerInfoArgument
+            MatchSnapshotInternal(assertions, assertions.Subject.GetType(), serializer, filePath, new StackTrace());
         }
 
+        private static AndConstraint<ObjectAssertions> MatchSnapshotInternal(ObjectAssertions assertions, Type deserializationType,
+            JsonSerializer serializer, string filePath, StackTrace stackTrace)
+        {
+            return new SnapshotMatcher(new Snapshotter(filePath, stackTrace))
+                .Match(assertions, deserializationType, serializer);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static AndWhichConstraint<ObjectAssertions, T> MatchSnapshot<T>(this ObjectAssertions assertions,
+            JsonSerializer serializer = null, [CallerFilePath] string filePath = null)
+        {
+            // ReSharper disable once ExplicitCallerInfoArgument
+            return MatchSnapshotInternal(assertions, typeof(T), serializer, filePath, new StackTrace())
+                .And.BeAssignableTo<T>();
+        }
     }
 }

@@ -1,6 +1,5 @@
-using System.Diagnostics;
+using System;
 using System.IO;
-using System.Linq;
 using System.Text;
 using FluentAssertions.Primitives;
 using Newtonsoft.Json;
@@ -8,7 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace FluentAssertions.Json.Snapshot
 {
-    public class SnapshotMatcher
+    internal class SnapshotMatcher
     {
         private readonly Snapshotter _snapshotter;
 
@@ -17,15 +16,24 @@ namespace FluentAssertions.Json.Snapshot
             _snapshotter = snapshotter;
         }
 
-        public AndConstraint<JTokenAssertions> Match(ObjectAssertions assertions, JsonSerializer serializer, string filePath)
+        public AndConstraint<ObjectAssertions> Match(ObjectAssertions assertions, Type deserializationType,
+            JsonSerializer serializer)
         {
             serializer ??= new JsonSerializer();
-            
-            var snapshot = _snapshotter.Snapshot(assertions.Subject, serializer);
+
+            var subject = assertions.Subject;
+            var snapshot = _snapshotter.Snapshot(subject, serializer);
 
             var actualJson = ToJTokenUsingSerializer(assertions, serializer);
 
-            return actualJson.Should().BeEquivalentTo(snapshot, "snapshot doesn't match");
+            actualJson.Should().BeEquivalentTo(snapshot, "snapshot doesn't match");
+
+            var deserializedSnapshot = snapshot.ToObject(deserializationType, serializer);
+            deserializedSnapshot.Should()
+                .BeOfType(subject.GetType())
+                .And.BeEquivalentTo(subject);
+
+            return deserializedSnapshot.Should().BeAssignableTo(deserializationType);
         }
 
 

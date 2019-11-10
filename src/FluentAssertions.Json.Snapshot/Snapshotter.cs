@@ -11,11 +11,13 @@ namespace FluentAssertions.Json.Snapshot
     {
         private readonly string _snapshotPath;
 
-        public Snapshotter(string path, StackTrace stackTrace)
+        internal Snapshotter(string path, StackTrace stackTrace)
         {
             var fileName = SnapshotNameForTest(stackTrace);
             _snapshotPath =
-                $"{Path.GetDirectoryName(path)}{Path.DirectorySeparatorChar}{fileName}.json";
+                $"{Path.GetDirectoryName(path)}{Path.DirectorySeparatorChar}"
+                + $"_snapshots{Path.DirectorySeparatorChar}"
+                + $"{fileName}.json";
         }
 
         private string SnapshotNameForTest(StackTrace stackTrace)
@@ -30,7 +32,7 @@ namespace FluentAssertions.Json.Snapshot
             var declaringTypeName = ReplaceInvalidChars(declaringType?.Name ?? "__global__");
             var mthName = ReplaceInvalidChars(mth.Name);
 
-            var fileName = $"{declaringTypeName}.{mthName}";
+            var fileName = $"{declaringTypeName}{Path.DirectorySeparatorChar}{mthName}";
             return fileName;
         }
 
@@ -44,7 +46,7 @@ namespace FluentAssertions.Json.Snapshot
                     subject);
                 writer.Flush();
             }
-            
+
             using var fileStream = File.OpenRead(_snapshotPath);
             var snapshot =
                 serializer.Deserialize<JToken>(
@@ -52,10 +54,11 @@ namespace FluentAssertions.Json.Snapshot
 
             return snapshot;
         }
- 
+
         private string ReplaceInvalidChars(string declaringTypeName)
         {
             return Path.GetInvalidFileNameChars()
                 .Aggregate(declaringTypeName, (name, c) => name.Replace(c, '_'));
-        }   }
+        }
+    }
 }
