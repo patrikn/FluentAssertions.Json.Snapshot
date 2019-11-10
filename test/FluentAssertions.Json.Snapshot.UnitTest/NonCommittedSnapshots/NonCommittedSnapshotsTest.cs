@@ -10,13 +10,31 @@ namespace FluentAssertions.Json.Snapshot.UnitTest.NonCommittedSnapshots
         public NonCommittedSnapshotsTest()
         {
             // Make sure we don't have one left over from earlier aborted test run
-            DeleteSnapshotDirectory();
+            if (Directory.Exists(GetSnapshotDirectory()))
+            {
+                DeleteSnapshotDirectory();
+            }
         }
 
         [Fact]
         public void Should_work_if_directory_does_not_exist()
         {
             new Test().Should().MatchSnapshot();
+        }
+
+        public class NestedClass : NonCommittedSnapshotsTest
+        {
+            [Fact]
+            public void Should_create_directory_for_nested_class()
+            {
+                new Test().Should().MatchSnapshot();
+                var expectedSnapshotPath = Path.Combine(
+                    GetSnapshotDirectory(),
+                    nameof(NonCommittedSnapshotsTest),
+                    nameof(NestedClass),
+                    $"{nameof(Should_create_directory_for_nested_class)}.json");
+                File.Exists(expectedSnapshotPath).Should().BeTrue();
+            }
         }
 
         public class Test
@@ -29,9 +47,14 @@ namespace FluentAssertions.Json.Snapshot.UnitTest.NonCommittedSnapshots
             DeleteSnapshotDirectory();
         }
 
-        private void DeleteSnapshotDirectory([CallerFilePath] string path = null)
+        private void DeleteSnapshotDirectory()
         {
-            Directory.Delete(Path.Combine(Path.GetDirectoryName(path), "_snapshots"), true);
+            Directory.Delete(GetSnapshotDirectory(), true);
+        }
+
+        private static string GetSnapshotDirectory([CallerFilePath] string path = null)
+        {
+            return Path.Combine(Path.GetDirectoryName(path), "_snapshots");
         }
     }
 }

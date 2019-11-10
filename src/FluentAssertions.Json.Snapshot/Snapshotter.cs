@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -24,17 +25,28 @@ namespace FluentAssertions.Json.Snapshot
         private string SnapshotNameForTest(StackTrace stackTrace)
         {
             var mth = stackTrace.GetFrame(1).GetMethod();
+            var declaringTypePath = PathForType(mth);
+
+            var mthName = ReplaceInvalidChars(mth.Name);
+
+            var fileName = Path.Combine($"{declaringTypePath}", $"{mthName}");
+            return fileName;
+        }
+
+        private string PathForType(MemberInfo mth)
+        {
             var declaringType = mth.DeclaringType;
+            var declaringTypePath = ReplaceInvalidChars(declaringType?.Name ?? "__global__");
+
             while (declaringType != null && declaringType.IsNested)
             {
                 declaringType = declaringType.DeclaringType;
+                declaringTypePath = declaringType == null ?
+                    declaringTypePath
+                    : Path.Combine(ReplaceInvalidChars(declaringType.Name), declaringTypePath);
             }
 
-            var declaringTypeName = ReplaceInvalidChars(declaringType?.Name ?? "__global__");
-            var mthName = ReplaceInvalidChars(mth.Name);
-
-            var fileName = $"{declaringTypeName}{Path.DirectorySeparatorChar}{mthName}";
-            return fileName;
+            return declaringTypePath;
         }
 
         public JToken Snapshot(object subject, JsonSerializer serializer)
