@@ -10,10 +10,7 @@ namespace FluentAssertions.Json.Snapshot.UnitTest.NonCommittedSnapshots
         public NonCommittedSnapshotsTest()
         {
             // Make sure we don't have one left over from earlier aborted test run
-            if (Directory.Exists(GetSnapshotDirectory()))
-            {
-                DeleteSnapshotDirectory();
-            }
+            DeleteSnapshotDirectory();
         }
 
         [Fact]
@@ -49,10 +46,13 @@ namespace FluentAssertions.Json.Snapshot.UnitTest.NonCommittedSnapshots
 
         private void DeleteSnapshotDirectory()
         {
-            Directory.Delete(GetSnapshotDirectory(), true);
+            if (Directory.Exists(GetSnapshotDirectory()))
+            {
+                Directory.Delete(GetSnapshotDirectory(), true);
+            }
         }
 
-        private static string GetSnapshotDirectory([CallerFilePath] string path = null)
+        private static string GetSnapshotDirectory([CallerFilePath] string? path = null)
         {
             return Path.Combine(Path.GetDirectoryName(path), "_snapshots");
         }

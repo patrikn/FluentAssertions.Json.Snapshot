@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -49,7 +50,7 @@ namespace FluentAssertions.Json.Snapshot
             return declaringTypePath;
         }
 
-        public JToken Snapshot(object subject, JsonSerializer serializer)
+        public JToken? Snapshot(object subject, JsonSerializer serializer)
         {
             if (!File.Exists(_snapshotPath))
             {
@@ -75,8 +76,7 @@ namespace FluentAssertions.Json.Snapshot
 
         private string ReplaceInvalidChars(string declaringTypeName)
         {
-            return Path.GetInvalidFileNameChars()
-                .Aggregate(declaringTypeName, (name, c) => name.Replace(c, '_'));
+            return Regex.Replace(declaringTypeName, "[^\\w\\d-_]", "_");
         }
     }
 }

@@ -127,7 +127,8 @@ namespace FluentAssertions.Json.Snapshot.UnitTest
             public override Test ReadJson(JsonReader reader, Type objectType, Test existingValue, bool hasExistingValue,
                 JsonSerializer serializer)
             {
-                return new Test((string) reader.Value);
+                var readerValue = (string?) reader.Value ?? throw new NullReferenceException();
+                return new Test(readerValue);
             }
         }
         public class NotDeserializableConverter : JsonConverter<TestWithInterface>
@@ -154,7 +155,8 @@ namespace FluentAssertions.Json.Snapshot.UnitTest
             public override ITest ReadJson(JsonReader reader, Type objectType, ITest existingValue, bool hasExistingValue,
                 JsonSerializer serializer)
             {
-                return new TestWithInterface((string) reader.Value);
+                var readerValue = (string?) reader.Value ?? throw new NullReferenceException();
+                return new TestWithInterface(readerValue);
             }
         }
 

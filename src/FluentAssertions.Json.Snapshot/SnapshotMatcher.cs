@@ -17,7 +17,7 @@ namespace FluentAssertions.Json.Snapshot
         }
 
         public AndConstraint<ObjectAssertions> Match(ObjectAssertions assertions, Type deserializationType,
-            JsonSerializer serializer)
+            JsonSerializer? serializer)
         {
             serializer ??= new JsonSerializer();
 
@@ -28,7 +28,7 @@ namespace FluentAssertions.Json.Snapshot
 
             actualJson.Should().BeEquivalentTo(snapshot, "snapshot doesn't match");
 
-            var deserializedSnapshot = snapshot.ToObject(deserializationType, serializer);
+            var deserializedSnapshot = snapshot?.ToObject(deserializationType, serializer);
             deserializedSnapshot.Should()
                 .BeOfType(subject.GetType())
                 .And.BeEquivalentTo(subject);
@@ -37,7 +37,7 @@ namespace FluentAssertions.Json.Snapshot
         }
 
 
-        private JToken ToJTokenUsingSerializer(ObjectAssertions assertions, JsonSerializer serializer)
+        private JToken? ToJTokenUsingSerializer(ObjectAssertions assertions, JsonSerializer serializer)
         {
             var buffer = new MemoryStream();
             var writer = new StreamWriter(buffer);
