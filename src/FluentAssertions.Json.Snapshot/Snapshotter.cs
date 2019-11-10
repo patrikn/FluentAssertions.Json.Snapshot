@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -10,14 +11,14 @@ namespace FluentAssertions.Json.Snapshot
     internal class Snapshotter
     {
         private readonly string _snapshotPath;
+        private readonly string _snapshotDirectory;
 
         internal Snapshotter(string path, StackTrace stackTrace)
         {
             var fileName = SnapshotNameForTest(stackTrace);
-            _snapshotPath =
-                $"{Path.GetDirectoryName(path)}{Path.DirectorySeparatorChar}"
-                + $"_snapshots{Path.DirectorySeparatorChar}"
-                + $"{fileName}.json";
+            var testDirectory = Path.GetDirectoryName(path) ?? throw new ArgumentException(nameof(path));
+            _snapshotPath = Path.Combine(testDirectory, "_snapshots", $"{fileName}.json");
+            _snapshotDirectory = Path.GetDirectoryName(_snapshotPath);
         }
 
         private string SnapshotNameForTest(StackTrace stackTrace)
@@ -40,11 +41,7 @@ namespace FluentAssertions.Json.Snapshot
         {
             if (!File.Exists(_snapshotPath))
             {
-                using var output = File.OpenWrite(_snapshotPath);
-                var writer = new StreamWriter(output, Encoding.UTF8);
-                serializer.Serialize(new JsonTextWriter(writer),
-                    subject);
-                writer.Flush();
+                CreateSnapshot(subject, serializer);
             }
 
             using var fileStream = File.OpenRead(_snapshotPath);
@@ -53,6 +50,15 @@ namespace FluentAssertions.Json.Snapshot
                     new JsonTextReader(new StreamReader(fileStream, Encoding.UTF8)));
 
             return snapshot;
+        }
+
+        private void CreateSnapshot(object subject, JsonSerializer serializer)
+        {
+            Directory.CreateDirectory(_snapshotDirectory);
+            using var output = File.OpenWrite(_snapshotPath);
+            var writer = new StreamWriter(output, Encoding.UTF8);
+            serializer.Serialize(new JsonTextWriter(writer), subject);
+            writer.Flush();
         }
 
         private string ReplaceInvalidChars(string declaringTypeName)
