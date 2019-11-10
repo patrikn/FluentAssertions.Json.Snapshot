@@ -19,7 +19,7 @@ namespace FluentAssertions.Json.Snapshot.UnitTest.NonCommittedSnapshots
             new Test().Should().MatchSnapshot();
         }
 
-        public class NestedClass : NonCommittedSnapshotsTest
+        public class NestedClass
         {
             [Fact]
             public void Should_create_directory_for_nested_class()
