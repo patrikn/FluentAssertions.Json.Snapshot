@@ -1,14 +1,19 @@
 using System;
 using System.IO;
 using System.Runtime.CompilerServices;
+using FluentAssertions;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace FluentAssertions.Json.Snapshot.UnitTest.NonCommittedSnapshots
 {
     public class NonCommittedSnapshotsTest : IDisposable
     {
-        public NonCommittedSnapshotsTest()
+        private readonly ITestOutputHelper _outputHelper;
+
+        public NonCommittedSnapshotsTest(ITestOutputHelper outputHelper)
         {
+            _outputHelper = outputHelper;
             // Make sure we don't have one left over from earlier aborted test run
             DeleteSnapshotDirectory();
         }
@@ -32,6 +37,10 @@ namespace FluentAssertions.Json.Snapshot.UnitTest.NonCommittedSnapshots
                     $"{nameof(Should_create_directory_for_nested_class)}.json");
                 File.Exists(expectedSnapshotPath).Should().BeTrue();
             }
+
+            public NestedClass(ITestOutputHelper outputHelper) : base(outputHelper)
+            {
+            }
         }
 
         public class Test
@@ -46,9 +55,18 @@ namespace FluentAssertions.Json.Snapshot.UnitTest.NonCommittedSnapshots
 
         private void DeleteSnapshotDirectory()
         {
-            if (Directory.Exists(GetSnapshotDirectory()))
+            var snapshotDirectory = GetSnapshotDirectory();
+            if (Directory.Exists(snapshotDirectory))
             {
-                Directory.Delete(GetSnapshotDirectory(), true);
+                try
+                {
+                    Directory.Delete(snapshotDirectory, true);
+                }
+                catch (Exception e)
+                {
+                    _outputHelper.WriteLine(
+                        $"Failed to delete snapshot directory {snapshotDirectory}: {e.Message}");
+                }
             }
         }
 
