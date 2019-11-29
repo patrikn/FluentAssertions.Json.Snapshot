@@ -2,7 +2,6 @@
 
     <PropertyGroup>
         <TargetFramework>netcoreapp2.2</TargetFramework>
-
         <IsPackable>false</IsPackable>
     </PropertyGroup>
 
@@ -14,7 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\FluentAssertions.Json.Snapshot\FluentAssertions.Json.Snapshot.csproj" />
+      <ProjectReference Include="..\..\src\Flushot\Flushot.csproj" />
     </ItemGroup>
 
 </Project>

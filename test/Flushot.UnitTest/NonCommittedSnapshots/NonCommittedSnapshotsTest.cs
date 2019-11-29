@@ -5,7 +5,7 @@ using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace FluentAssertions.Json.Snapshot.UnitTest.NonCommittedSnapshots
+namespace Flushot.UnitTest.NonCommittedSnapshots
 {
     public class NonCommittedSnapshotsTest : IDisposable
     {

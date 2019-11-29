@@ -1,11 +1,13 @@
 using System;
 using System.IO;
 using System.Text;
+using FluentAssertions;
+using FluentAssertions.Json;
 using FluentAssertions.Primitives;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace FluentAssertions.Json.Snapshot
+namespace Flushot
 {
     internal class SnapshotMatcher
     {

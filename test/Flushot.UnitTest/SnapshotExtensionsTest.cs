@@ -1,10 +1,11 @@
 using System;
 using System.IO;
+using FluentAssertions;
 using Newtonsoft.Json;
 using Xunit;
 using Xunit.Sdk;
 
-namespace FluentAssertions.Json.Snapshot.UnitTest
+namespace Flushot.UnitTest
 {
     public class SnapshotExtensionsTest
     {

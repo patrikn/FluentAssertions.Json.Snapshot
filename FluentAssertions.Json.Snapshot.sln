@@ -4,9 +4,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{EB483AAC-C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C80C408F-5DEA-4477-83FA-C9CFFAC14011}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentAssertions.Json.Snapshot", "src\FluentAssertions.Json.Snapshot\FluentAssertions.Json.Snapshot.csproj", "{016471F3-F21B-419E-A576-3CFA303C22A0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flushot", "src\Flushot\Flushot.csproj", "{016471F3-F21B-419E-A576-3CFA303C22A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluentAssertions.Json.Snapshot.UnitTest", "test\FluentAssertions.Json.Snapshot.UnitTest\FluentAssertions.Json.Snapshot.UnitTest.csproj", "{AB119D5C-8DA5-4A9D-9C36-7874941282B9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Flushot.UnitTest", "test\Flushot.UnitTest\Flushot.UnitTest.csproj", "{AB119D5C-8DA5-4A9D-9C36-7874941282B9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

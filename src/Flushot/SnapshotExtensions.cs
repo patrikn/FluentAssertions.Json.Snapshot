@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using FluentAssertions;
 using FluentAssertions.Primitives;
 using Newtonsoft.Json;
 
-namespace FluentAssertions.Json.Snapshot
+namespace Flushot
 {
     public static class SnapshotExtensions
     {
