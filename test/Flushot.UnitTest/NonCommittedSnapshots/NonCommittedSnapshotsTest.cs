@@ -37,10 +37,6 @@ namespace Flushot.UnitTest.NonCommittedSnapshots
                     $"{nameof(Should_create_directory_for_nested_class)}.json");
                 File.Exists(expectedSnapshotPath).Should().BeTrue();
             }
-
-            public NestedClass(ITestOutputHelper outputHelper) : base(outputHelper)
-            {
-            }
         }
 
         public class Test
