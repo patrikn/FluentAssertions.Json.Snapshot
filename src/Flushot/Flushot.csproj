@@ -16,7 +16,7 @@
       An extension to FluentAssertions that compares JSON serialization of objects to snapshots stored 
       in the source tree.
     </Description>
-    <PackageLicenseExpression></PackageLicenseExpression>
+    <PackageLicenseExpression>0BSD</PackageLicenseExpression>
     <Version>0.0.1</Version>
     <Authors>Patrik Nordebo</Authors>
   </PropertyGroup>
