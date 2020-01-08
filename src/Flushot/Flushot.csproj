@@ -5,18 +5,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentAssertions" Version="5.9.0"/>
-    <PackageReference Include="FluentAssertions.Json" Version="5.3.0"/>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3"/>
+    <PackageReference Include="FluentAssertions" Version="5.9.0" />
+    <PackageReference Include="FluentAssertions.Json" Version="5.3.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
   <PropertyGroup>
     <PackageId>Flushot</PackageId>
     <Title>FluentAssertions Json Snapshot</Title>
     <Description>
-      An extension to FluentAssertions that compares JSON serialization of objects to snapshots stored 
+      An extension to FluentAssertions that compares JSON serialization of objects to snapshots stored
       in the source tree.
     </Description>
-    <PackageLicenseExpression>0BSD</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/patrikn/Flushot</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Version>0.0.1</Version>
     <Authors>Patrik Nordebo</Authors>
   </PropertyGroup>
