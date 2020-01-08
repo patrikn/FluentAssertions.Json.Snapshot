@@ -15,18 +15,20 @@ namespace Flushot
     internal class Snapshotter
     {
         private readonly string _snapshotDirectory;
+        internal string SnapshotPath { get; }
 
-        public readonly string _snapshotPath;
-
-        internal Snapshotter(string path, StackTrace stackTrace)
+        internal Snapshotter(string path, string fileName)
         {
-            var fileName = SnapshotNameForTest(stackTrace);
             var testDirectory = Path.GetDirectoryName(path) ?? throw new ArgumentException(nameof(path));
-            _snapshotPath = Path.Combine(testDirectory, "_snapshots", $"{fileName}.json");
-            _snapshotDirectory = Path.GetDirectoryName(_snapshotPath);
+            SnapshotPath = Path.Combine(testDirectory, "_snapshots", $"{fileName}.json");
+            _snapshotDirectory = Path.GetDirectoryName(SnapshotPath);
         }
 
-        private string SnapshotNameForTest(StackTrace stackTrace)
+        internal Snapshotter(string path, StackTrace stackTrace) : this(path, SnapshotNameForTest(stackTrace))
+        {
+        }
+
+        private static string SnapshotNameForTest(StackTrace stackTrace)
         {
             var testFrame = (stackTrace.GetFrames() ?? throw new ArgumentNullException(nameof(stackTrace)))
                             .FirstOrDefault(frame => frame.GetMethod().GetCustomAttributes(typeof(FactAttribute)).Any());
@@ -44,7 +46,7 @@ namespace Flushot
             return fileName;
         }
 
-        private string PathForType(MemberInfo mth)
+        private static string PathForType(MemberInfo mth)
         {
             var declaringType = mth.DeclaringType;
             var declaringTypePath = ReplaceInvalidChars(declaringType?.Name ?? "__global__");
@@ -62,12 +64,12 @@ namespace Flushot
 
         public JToken? Snapshot(object subject, JsonSerializer serializer)
         {
-            if (!File.Exists(_snapshotPath))
+            if (!File.Exists(SnapshotPath))
             {
                 CreateSnapshot(subject, serializer);
             }
 
-            using var fileStream = File.OpenRead(_snapshotPath);
+            using var fileStream = File.OpenRead(SnapshotPath);
             var snapshot =
                 serializer.Deserialize<JToken>(
                     new JsonTextReader(new StreamReader(fileStream, Encoding.UTF8)));
@@ -78,13 +80,13 @@ namespace Flushot
         private void CreateSnapshot(object subject, JsonSerializer serializer)
         {
             Directory.CreateDirectory(_snapshotDirectory);
-            using var output = File.OpenWrite(_snapshotPath);
+            using var output = File.OpenWrite(SnapshotPath);
             var writer = new StreamWriter(output, Encoding.UTF8);
             serializer.Serialize(new JsonTextWriter(writer), subject);
             writer.Flush();
         }
 
-        private string ReplaceInvalidChars(string declaringTypeName)
+        private static string ReplaceInvalidChars(string declaringTypeName)
         {
             return Regex.Replace(declaringTypeName, "[^\\w\\d-_]", "_");
         }

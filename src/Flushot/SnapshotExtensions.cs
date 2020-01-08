@@ -14,25 +14,52 @@ namespace Flushot
         public static void MatchSnapshot(this ObjectAssertions assertions,
             JsonSerializer? serializer = null, [CallerFilePath] string? filePath = null)
         {
-            var filePathNotNull = filePath ?? throw new ArgumentNullException(nameof(filePath));
-            // ReSharper disable once ExplicitCallerInfoArgument
-            MatchSnapshotInternal(assertions, assertions.Subject.GetType(), serializer, filePathNotNull, new StackTrace());
+            MatchSnapshotInternal(assertions, assertions.Subject.GetType(), serializer, filePath, null);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        public static void MatchSnapshot(this ObjectAssertions assertions,
+                                         string? snapshotFileName,
+                                         JsonSerializer? serializer = null, [CallerFilePath] string? filePath = null)
+        {
+            MatchSnapshotInternal(assertions, assertions.Subject.GetType(), serializer, filePath, snapshotFileName);
         }
 
         private static AndConstraint<ObjectAssertions> MatchSnapshotInternal(ObjectAssertions assertions, Type deserializationType,
-            JsonSerializer? serializer, string filePath, StackTrace stackTrace)
+            JsonSerializer? serializer, string? filePath, string? snapshotFileName)
         {
-            return new SnapshotMatcher(new Snapshotter(filePath, stackTrace))
-                .Match(assertions, deserializationType, serializer);
+            var filePathNotNull = filePath ?? throw new ArgumentNullException(nameof(filePath));
+
+            SnapshotMatcher matcher;
+            if (snapshotFileName != null)
+            {
+                matcher = new SnapshotMatcher(new Snapshotter(filePathNotNull, snapshotFileName));
+            }
+            else
+            {
+                matcher = new SnapshotMatcher(new Snapshotter(filePathNotNull, new StackTrace()));
+            }
+
+            return matcher.Match(assertions, deserializationType, serializer);
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
         public static AndWhichConstraint<ObjectAssertions, T> MatchSnapshot<T>(this ObjectAssertions assertions,
             JsonSerializer? serializer = null, [CallerFilePath] string? filePath = null)
         {
-            filePath = filePath ?? throw new ArgumentNullException(nameof(filePath));
             // ReSharper disable once ExplicitCallerInfoArgument
-            return MatchSnapshotInternal(assertions, typeof(T), serializer, filePath, new StackTrace())
+            return MatchSnapshotInternal(assertions, typeof(T), serializer, filePath, null)
+                .And.BeAssignableTo<T>();
+        }
+
+        public static AndWhichConstraint<ObjectAssertions, T> MatchSnapshot<T>(
+            this ObjectAssertions assertions,
+            string explicitlyNamedSnapshot,
+            JsonSerializer? serializer = null,
+            [CallerFilePath] string? filePath = null)
+        {
+            // ReSharper disable once ExplicitCallerInfoArgument
+            return MatchSnapshotInternal(assertions, typeof(T), serializer, filePath, explicitlyNamedSnapshot)
                 .And.BeAssignableTo<T>();
         }
     }

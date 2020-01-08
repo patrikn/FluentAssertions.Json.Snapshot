@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Threading.Tasks;
 using FluentAssertions;
 using Newtonsoft.Json;
 using Xunit;
@@ -99,6 +98,30 @@ namespace Flushot.UnitTest
         {
             new TestWithInterface("test").Should().MatchSnapshot<ITest>()
                 .Subject.Property.Should().Be("test");
+        }
+
+
+        [Fact]
+        public void Should_allow_explicitly_named_snapshots()
+        {
+            new Test("hej").Should().MatchSnapshot("SnapshotExtensionsTest/ExplicitlyNamed/Explicitly_named_snapshot");
+        }
+
+        [Fact]
+        public void Should_not_match_changed_explicitly_named_snapshot()
+        {
+            Action act = () => new Test("hej").Should().MatchSnapshot("SnapshotExtensionsTest/ExplicitlyNamed/Changed_explicitly_named_snapshot");
+
+            act.Should()
+                .Throw<XunitException>("*SnapshotExtensionsTest/ExplicitlyNamed/Explicitly_named_snapshot.json*");
+        }
+
+        [Fact]
+        public void Should_allow_explicitly_named_snapshots_with_constraint()
+        {
+            new Test("xyzzy").Should()
+                .MatchSnapshot<Test>("SnapshotExtensionsTest/ExplicitlyNamed/Explicitly_named_snapshot_with_constraint")
+                .And.NotBeNull();
         }
 
         public class Test
