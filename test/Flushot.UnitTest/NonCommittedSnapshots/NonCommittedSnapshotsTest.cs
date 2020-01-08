@@ -68,7 +68,9 @@ namespace Flushot.UnitTest.NonCommittedSnapshots
 
         private static string GetSnapshotDirectory([CallerFilePath] string? path = null)
         {
-            return Path.Combine(Path.GetDirectoryName(path), "_snapshots");
+            var pathNotNull = path ?? throw new ArgumentNullException(nameof(path));
+            var directoryName = Path.GetDirectoryName(pathNotNull) ?? throw new DirectoryNotFoundException(pathNotNull);
+            return Path.Combine(directoryName, "_snapshots");
         }
     }
 }
