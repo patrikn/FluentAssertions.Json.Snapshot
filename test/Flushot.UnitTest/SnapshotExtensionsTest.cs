@@ -28,8 +28,9 @@ namespace Flushot.UnitTest
         {
             Action act = () => new Test("hej").Should().MatchSnapshot();
 
+            var sep = Path.DirectorySeparatorChar;
             act.Should().Throw<XunitException>()
-                .WithMessage("*_snapshots/SnapshotExtensionsTest/Should_include_snapshot_path_in_because.json*");
+                .WithMessage($"*_snapshots{sep}SnapshotExtensionsTest{sep}Should_include_snapshot_path_in_because.json*");
         }
 
         [Fact]
@@ -112,8 +113,10 @@ namespace Flushot.UnitTest
         {
             Action act = () => new Test("hej").Should().MatchSnapshot("SnapshotExtensionsTest/ExplicitlyNamed/Changed_explicitly_named_snapshot");
 
+            var sep = Path.DirectorySeparatorChar;
             act.Should()
-                .Throw<XunitException>("*SnapshotExtensionsTest/ExplicitlyNamed/Explicitly_named_snapshot.json*");
+                .Throw<XunitException>()
+                .WithMessage($"*SnapshotExtensionsTest{sep}ExplicitlyNamed{sep}Changed_explicitly_named_snapshot.json*");
         }
 
         [Fact]
