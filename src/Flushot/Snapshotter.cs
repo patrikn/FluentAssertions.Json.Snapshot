@@ -1,18 +1,22 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Xunit;
+using Xunit.Sdk;
 
 namespace Flushot
 {
     internal class Snapshotter
     {
-        private readonly string _snapshotPath;
         private readonly string _snapshotDirectory;
+
+        public readonly string _snapshotPath;
 
         internal Snapshotter(string path, StackTrace stackTrace)
         {
@@ -24,7 +28,14 @@ namespace Flushot
 
         private string SnapshotNameForTest(StackTrace stackTrace)
         {
-            var mth = stackTrace.GetFrame(1).GetMethod();
+            var testFrame = (stackTrace.GetFrames() ?? throw new ArgumentNullException(nameof(stackTrace)))
+                            .FirstOrDefault(frame => frame.GetMethod().GetCustomAttributes(typeof(FactAttribute)).Any());
+            if (testFrame == null)
+            {
+                throw new XunitException("Snapshotting with implicit names only works in Xunit Fact methods");
+            }
+
+            var mth = testFrame.GetMethod();
             var declaringTypePath = PathForType(mth);
 
             var mthName = ReplaceInvalidChars(mth.Name);

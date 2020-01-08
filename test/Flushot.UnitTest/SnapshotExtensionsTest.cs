@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Newtonsoft.Json;
 using Xunit;
@@ -21,6 +22,15 @@ namespace Flushot.UnitTest
             Action act = () => new Test("hej").Should().MatchSnapshot();
 
             act.Should().Throw<XunitException>();
+        }
+
+        [Fact]
+        public void Should_include_snapshot_path_in_because()
+        {
+            Action act = () => new Test("hej").Should().MatchSnapshot();
+
+            act.Should().Throw<XunitException>()
+                .WithMessage("*_snapshots/SnapshotExtensionsTest/Should_include_snapshot_path_in_because.json*");
         }
 
         [Fact]

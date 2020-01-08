@@ -28,7 +28,7 @@ namespace Flushot
 
             var actualJson = ToJTokenUsingSerializer(assertions, serializer);
 
-            actualJson.Should().BeEquivalentTo(snapshot, "snapshot doesn't match");
+            actualJson.Should().BeEquivalentTo(snapshot, $"snapshot {_snapshotter._snapshotPath} doesn't match");
 
             var deserializedSnapshot = snapshot?.ToObject(deserializationType, serializer);
             deserializedSnapshot.Should()
@@ -37,7 +37,6 @@ namespace Flushot
 
             return deserializedSnapshot.Should().BeAssignableTo(deserializationType);
         }
-
 
         private JToken? ToJTokenUsingSerializer(ObjectAssertions assertions, JsonSerializer serializer)
         {

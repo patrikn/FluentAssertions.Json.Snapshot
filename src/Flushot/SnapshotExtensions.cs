@@ -30,9 +30,9 @@ namespace Flushot
         public static AndWhichConstraint<ObjectAssertions, T> MatchSnapshot<T>(this ObjectAssertions assertions,
             JsonSerializer? serializer = null, [CallerFilePath] string? filePath = null)
         {
+            filePath = filePath ?? throw new ArgumentNullException(nameof(filePath));
             // ReSharper disable once ExplicitCallerInfoArgument
-            var filePathNotNull = filePath ?? throw new ArgumentNullException(nameof(filePath));
-            return MatchSnapshotInternal(assertions, typeof(T), serializer, filePathNotNull, new StackTrace())
+            return MatchSnapshotInternal(assertions, typeof(T), serializer, filePath, new StackTrace())
                 .And.BeAssignableTo<T>();
         }
     }
