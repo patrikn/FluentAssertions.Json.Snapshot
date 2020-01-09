@@ -20,7 +20,7 @@ namespace Flushot
         internal Snapshotter(string path, string fileName)
         {
             var testDirectory = Path.GetDirectoryName(path) ?? throw new ArgumentException(nameof(path));
-            SnapshotPath = Path.Combine(testDirectory, "_snapshots", $"{fileName}.json");
+            SnapshotPath = Path.GetFullPath(Path.Combine(testDirectory, "_snapshots", $"{fileName}.json"));
             _snapshotDirectory = Path.GetDirectoryName(SnapshotPath);
         }
 
