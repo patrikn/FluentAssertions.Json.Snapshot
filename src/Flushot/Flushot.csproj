@@ -22,7 +22,7 @@
     </Description>
     <RepositoryUrl>https://github.com/patrikn/Flushot</RepositoryUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Version>0.0.1</Version>
+    <Version>0.0.2-alpha</Version>
     <Authors>Patrik Nordebo</Authors>
   </PropertyGroup>
 

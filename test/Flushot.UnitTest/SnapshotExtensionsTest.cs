@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using FluentAssertions;
 using Newtonsoft.Json;
 using Xunit;
@@ -125,6 +126,13 @@ namespace Flushot.UnitTest
             new Test("xyzzy").Should()
                 .MatchSnapshot<Test>("SnapshotExtensionsTest/ExplicitlyNamed/Explicitly_named_snapshot_with_constraint")
                 .And.NotBeNull();
+        }
+
+        [Fact]
+        public async Task Should_find_file_async()
+        {
+            Action act = () => new Test("hej").Should().MatchSnapshot();
+            await Task.Run(() => act.Should().Throw<XunitException>());
         }
 
         public class Test
