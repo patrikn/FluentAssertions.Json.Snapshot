@@ -4,12 +4,18 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Newtonsoft.Json;
 using Xunit;
+using Xunit.Abstractions;
 using Xunit.Sdk;
 
 namespace Flushot.UnitTest
 {
     public class SnapshotExtensionsTest
     {
+        public SnapshotExtensionsTest(ITestOutputHelper output)
+        {
+            Snapshotter.Output = output;
+        }
+
         [Fact]
         public void Should_match_matching_snapshot()
         {
