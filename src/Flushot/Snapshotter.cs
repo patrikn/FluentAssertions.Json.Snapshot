@@ -8,12 +8,14 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit;
+using Xunit.Abstractions;
 using Xunit.Sdk;
 
 namespace Flushot
 {
-    internal class Snapshotter
+    public class Snapshotter
     {
+        public static ITestOutputHelper? Output;
         private readonly string _snapshotDirectory;
         internal string SnapshotPath { get; }
 
@@ -79,11 +81,26 @@ namespace Flushot
 
         private void CreateSnapshot(object subject, JsonSerializer serializer)
         {
-            Directory.CreateDirectory(_snapshotDirectory);
+            var created = Directory.CreateDirectory(_snapshotDirectory);
+            // I don't think this should ever happen unless someone deleted the directory from under
+            // us, but I've seen weird intermittent failures so adding lots of checks seems like a good
+            // idea.
+            if (!created.Exists)
+            {
+                throw new XunitException($"Failed to create snapshot directory {_snapshotDirectory}");
+            }
             using var output = File.OpenWrite(SnapshotPath);
             var writer = new StreamWriter(output, Encoding.UTF8);
             serializer.Serialize(new JsonTextWriter(writer), subject);
             writer.Flush();
+            // Again this should never happen.
+            if (!File.Exists(SnapshotPath))
+            {
+                throw new XunitException($"Failed to create snapshot file {SnapshotPath}");
+            }
+
+            // Console.WriteLine($"{SnapshotPath} in {_snapshotDirectory}");
+            Output?.WriteLine($"Created {SnapshotPath} in {_snapshotDirectory}");
         }
 
         private static string ReplaceInvalidChars(string declaringTypeName)
