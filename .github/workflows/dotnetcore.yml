@@ -30,16 +30,10 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-     - name: ls
-       run: |
-        pwd
-        ls ..
-        ls ../../
-     - name: publish on version change
-       uses: rohith/publish-nuget@v2
+     - uses: actions/checkout@v2
+     - uses: rohith/publish-nuget@v2
        with:
          PROJECT_FILE_PATH: src/Flushot/Flushot.csproj # Relative to repository root
-         TAG_COMMIT: true # Flag to enable / disalge git tagging
-         TAG_FORMAT: v* # Format of the git tag, [*] gets replaced with version
+         TAG_COMMIT: false # Flag to enable / disalge git tagging
          NUGET_KEY: ${{secrets.NUGET_API_KEY}} # nuget.org API key
          # PACKAGE_NAME: NuGet package name, required when it's different from project name. Defaults to project name
