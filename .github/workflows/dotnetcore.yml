@@ -30,6 +30,10 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+     - name: ls
+       run: |
+        pwd
+        ls
      - name: publish on version change
        uses: rohith/publish-nuget@v2
        with:
