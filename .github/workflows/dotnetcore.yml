@@ -33,7 +33,8 @@ jobs:
      - name: ls
        run: |
         pwd
-        ls
+        ls ..
+        ls ../../
      - name: publish on version change
        uses: rohith/publish-nuget@v2
        with:
