@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Xunit.Abstractions;
@@ -23,7 +22,7 @@ namespace Flushot
             _snapshotDirectory = Path.GetDirectoryName(SnapshotPath);
         }
 
-        public JToken? Snapshot(object subject, JsonSerializer serializer)
+        public JToken? GetOrCreateSnapshot(object subject, JsonSerializer serializer)
         {
             if (!File.Exists(SnapshotPath))
             {
@@ -57,14 +56,6 @@ namespace Flushot
             {
                 throw new XunitException($"Failed to create snapshot file {SnapshotPath}");
             }
-
-            // Console.WriteLine($"{SnapshotPath} in {_snapshotDirectory}");
-            Output?.WriteLine($"Created {SnapshotPath} in {_snapshotDirectory}");
-        }
-
-        private static string ReplaceInvalidChars(string declaringTypeName)
-        {
-            return Regex.Replace(declaringTypeName, "[^\\w\\d-_]", "_");
         }
     }
 }

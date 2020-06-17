@@ -24,7 +24,7 @@ namespace Flushot
             serializer ??= new JsonSerializer();
 
             var subject = assertions.Subject;
-            var snapshot = _snapshotter.Snapshot(subject, serializer);
+            var snapshot = _snapshotter.GetOrCreateSnapshot(subject, serializer);
 
             var actualJson = ToJTokenUsingSerializer(assertions, serializer);
 
