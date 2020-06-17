@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using Newtonsoft.Json;
 using Xunit;
 using Xunit.Abstractions;
@@ -57,7 +58,7 @@ namespace Flushot.UnitTest
             try
             {
                 new Test("property").Should().MatchSnapshot();
-                File.Exists(snapshotFilePath).Should().BeTrue();
+                File.Exists(snapshotFilePath).Should().BeTrue($"{snapshotFilePath} should exist");
             }
             finally
             {
@@ -124,7 +125,7 @@ namespace Flushot.UnitTest
         public void Should_allow_explicitly_named_snapshots()
         {
             new Test("hej").Should()
-                .MatchSnapshot("SnapshotExtensionsTest/ExplicitlyNamed/Explicitly_named_snapshot");
+                .MatchNamedSnapshot(snapshotFileName: "ExplicitlyNamed/Explicitly_named_snapshot");
         }
 
         [Fact]
@@ -132,8 +133,7 @@ namespace Flushot.UnitTest
         {
             Action act = () =>
                 new Test("hej").Should()
-                    .MatchSnapshot(
-                        "SnapshotExtensionsTest/ExplicitlyNamed/Changed_explicitly_named_snapshot");
+                    .MatchNamedSnapshot("ExplicitlyNamed/Changed_explicitly_named_snapshot");
 
             var sep = Path.DirectorySeparatorChar;
             act.Should()
@@ -146,16 +146,28 @@ namespace Flushot.UnitTest
         public void Should_allow_explicitly_named_snapshots_with_constraint()
         {
             new Test("xyzzy").Should()
-                .MatchSnapshot<Test>(
-                    "SnapshotExtensionsTest/ExplicitlyNamed/Explicitly_named_snapshot_with_constraint")
+                .MatchNamedSnapshot<Test>(
+                    "ExplicitlyNamed/Explicitly_named_snapshot_with_constraint")
                 .And.NotBeNull();
         }
 
         [Fact]
-        public async Task Should_find_file_async()
+        public async Task Should_find_file_in_lambda_async()
         {
             Action act = () => new Test("hej").Should().MatchSnapshot();
-            await Task.Run(() => act.Should().Throw<XunitException>());
+            await Task.Run(() =>
+            {
+                using var scope = new AssertionScope();
+                act.Invoke();
+                var messages = scope.Discard();
+                messages
+                    .Should()
+                    .SatisfyRespectively(
+                        message => message
+                            .Should().StartWith("JSON document has a different value at $.Property"),
+                        message => message
+                            .Should().StartWith("Expected member Property to be"));
+            });
         }
 
         public class Test

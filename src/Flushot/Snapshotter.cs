@@ -1,13 +1,9 @@
 using System;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
 
@@ -22,46 +18,9 @@ namespace Flushot
         internal Snapshotter(string path, string fileName)
         {
             var testDirectory = Path.GetDirectoryName(path) ?? throw new ArgumentException(nameof(path));
-            SnapshotPath = Path.GetFullPath(Path.Combine(testDirectory, "_snapshots", $"{fileName}.json"));
+            var testClass = Path.GetFileName(path) ?? throw new ArgumentException(nameof(path));
+            SnapshotPath = Path.GetFullPath(Path.Combine(testDirectory, "_snapshots", testClass, $"{fileName}.json"));
             _snapshotDirectory = Path.GetDirectoryName(SnapshotPath);
-        }
-
-        internal Snapshotter(string path, StackTrace stackTrace) : this(path, SnapshotNameForTest(stackTrace))
-        {
-        }
-
-        private static string SnapshotNameForTest(StackTrace stackTrace)
-        {
-            var testFrame = (stackTrace.GetFrames() ?? throw new ArgumentNullException(nameof(stackTrace)))
-                            .FirstOrDefault(frame => frame.GetMethod().GetCustomAttributes(typeof(FactAttribute)).Any());
-            if (testFrame == null)
-            {
-                throw new XunitException("Snapshotting with implicit names only works in Xunit Fact methods");
-            }
-
-            var mth = testFrame.GetMethod();
-            var declaringTypePath = PathForType(mth);
-
-            var mthName = ReplaceInvalidChars(mth.Name);
-
-            var fileName = Path.Combine($"{declaringTypePath}", $"{mthName}");
-            return fileName;
-        }
-
-        private static string PathForType(MemberInfo mth)
-        {
-            var declaringType = mth.DeclaringType;
-            var declaringTypePath = ReplaceInvalidChars(declaringType?.Name ?? "__global__");
-
-            while (declaringType != null && declaringType.IsNested)
-            {
-                declaringType = declaringType.DeclaringType;
-                declaringTypePath = declaringType == null ?
-                    declaringTypePath
-                    : Path.Combine(ReplaceInvalidChars(declaringType.Name), declaringTypePath);
-            }
-
-            return declaringTypePath;
         }
 
         public JToken? Snapshot(object subject, JsonSerializer serializer)
