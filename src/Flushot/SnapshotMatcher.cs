@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 using FluentAssertions;
+using FluentAssertions.Equivalency;
 using FluentAssertions.Json;
 using FluentAssertions.Primitives;
 using Newtonsoft.Json;
@@ -18,10 +19,11 @@ namespace Flushot
             _snapshotter = snapshotter;
         }
 
-        public AndConstraint<ObjectAssertions> Match(
+        public AndConstraint<ObjectAssertions> Match<T>(
             ObjectAssertions assertions,
             Type deserializationType,
-            JsonSerializer? serializer)
+            JsonSerializer? serializer,
+            Func<EquivalencyAssertionOptions<T>, EquivalencyAssertionOptions<T>>? config)
         {
             serializer ??= new JsonSerializer();
 
@@ -36,7 +38,7 @@ namespace Flushot
             var deserializedSnapshot = snapshot?.ToObject(deserializationType, serializer);
             deserializedSnapshot.Should()
                                 .BeOfType(subject.GetType())
-                                .And.BeEquivalentTo(subject);
+                                .And.BeEquivalentTo((T)subject, config ?? (x => x));
 
             return deserializedSnapshot.Should().BeAssignableTo(deserializationType);
         }

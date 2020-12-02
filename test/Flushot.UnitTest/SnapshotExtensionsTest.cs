@@ -14,13 +14,21 @@ namespace Flushot.UnitTest
     {
         public SnapshotExtensionsTest(ITestOutputHelper output)
         {
-            Snapshotter.Output = output;
         }
 
         [Fact]
         public void Should_match_matching_snapshot()
         {
             new Test("hej").Should().MatchSnapshot();
+        }
+
+        [Fact]
+        public void Should_respect_equivalency_options()
+        {
+            new TestWithIgnoredProperty("hej", "notHere")
+                .Should()
+                .MatchSnapshot<TestWithIgnoredProperty>(
+                    equivalencyConfig: cfg => cfg.Excluding(x => x.Ignored));
         }
 
         [Fact]
@@ -177,7 +185,7 @@ namespace Flushot.UnitTest
                 });
         }
 
-        public class Test
+        private class Test
         {
             public Test(string property)
             {
@@ -188,13 +196,13 @@ namespace Flushot.UnitTest
         }
 
         [JsonConverter(typeof(InterfaceConverter))]
-        public interface ITest
+        private interface ITest
         {
             string Property { get; }
         }
 
         [JsonConverter(typeof(NotDeserializableConverter))]
-        public class TestWithInterface : ITest
+        private class TestWithInterface : ITest
         {
             public TestWithInterface(string property)
             {
@@ -204,7 +212,7 @@ namespace Flushot.UnitTest
             public string Property { get; }
         }
 
-        public class CustomTestConverter : JsonConverter<Test>
+        private class CustomTestConverter : JsonConverter<Test>
         {
             public override void WriteJson(JsonWriter writer, Test? value, JsonSerializer serializer)
             {
@@ -223,7 +231,7 @@ namespace Flushot.UnitTest
             }
         }
 
-        public class NotDeserializableConverter : JsonConverter<TestWithInterface>
+        private class NotDeserializableConverter : JsonConverter<TestWithInterface>
         {
             public override void WriteJson(
                 JsonWriter writer,
@@ -240,11 +248,11 @@ namespace Flushot.UnitTest
                 bool hasExistingValue,
                 JsonSerializer serializer)
             {
-                throw new NotImplementedException();
+                throw new Exception();
             }
         }
 
-        public class InterfaceConverter : JsonConverter<ITest>
+        private class InterfaceConverter : JsonConverter<ITest>
         {
             public override void WriteJson(JsonWriter writer, ITest? value, JsonSerializer serializer)
             {
@@ -263,14 +271,41 @@ namespace Flushot.UnitTest
             }
         }
 
-        public class NotDeserializableTest
+        private class NotDeserializableTest
         {
             // ReSharper disable once UnusedAutoPropertyAccessor.Global
+            // ReSharper disable once MemberCanBePrivate.Local
+            // ReSharper disable once UnusedAutoPropertyAccessor.Local
             public string Property { get; }
 
             public NotDeserializableTest(int[] ints)
             {
+                // ReSharper disable once ConstantConditionalAccessQualifier
                 Property = Convert.ToString(ints?[0] ?? 0);
+            }
+        }
+
+        public class TestWithIgnoredProperty
+        {
+            // Only here to test that it gets ignored with equivalency options...
+            // ReSharper disable once UnusedAutoPropertyAccessor.Global
+            // ReSharper disable once MemberCanBePrivate.Global
+            public string NotIgnored { get; }
+
+            [JsonIgnore]
+            public string? Ignored { get; }
+
+            [JsonConstructor]
+            public TestWithIgnoredProperty(string notIgnored)
+            {
+                NotIgnored = notIgnored;
+                Ignored = null;
+            }
+
+            public TestWithIgnoredProperty(string notIgnored, string ignored)
+            {
+                NotIgnored = notIgnored;
+                Ignored = ignored;
             }
         }
     }

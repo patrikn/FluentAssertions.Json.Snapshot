@@ -14,7 +14,6 @@ namespace Flushot.UnitTest.NonCommittedSnapshots
         public NonCommittedSnapshotsTest(ITestOutputHelper outputHelper)
         {
             _outputHelper = outputHelper;
-            Snapshotter.Output = outputHelper;
             // Make sure we don't have one left over from earlier aborted test run
             DeleteSnapshotDirectory();
         }
