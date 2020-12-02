@@ -12,29 +12,48 @@ namespace Flushot
         private static readonly Regex FileExtensionRegex = new Regex("\\.[^.]*$");
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        public static void MatchSnapshot(this ObjectAssertions assertions,
-                                         JsonSerializer? serializer = null,
-                                         [CallerMemberName] string? snapshotFileName = null,
-                                         [CallerFilePath] string? filePath = null)
+        public static void MatchSnapshot(
+            this ObjectAssertions assertions,
+            JsonSerializer? serializer = null,
+            [CallerMemberName] string? snapshotFileName = null,
+            [CallerFilePath] string? filePath = null)
         {
-            MatchSnapshotInternal(assertions, assertions.Subject.GetType(), serializer, filePath, snapshotFileName);
+            MatchSnapshotInternal(
+                assertions,
+                assertions.Subject.GetType(),
+                serializer,
+                filePath,
+                snapshotFileName);
         }
 
-        public static void MatchNamedSnapshot(this ObjectAssertions assertions,
-                                              string snapshotFileName,
-                                              JsonSerializer? serializer = null,
-                                              [CallerFilePath] string? filePath = null)
+        public static void MatchNamedSnapshot(
+            this ObjectAssertions assertions,
+            string snapshotFileName,
+            JsonSerializer? serializer = null,
+            [CallerFilePath] string? filePath = null)
         {
-            MatchSnapshotInternal(assertions, assertions.Subject.GetType(), serializer, filePath, snapshotFileName);
+            MatchSnapshotInternal(
+                assertions,
+                assertions.Subject.GetType(),
+                serializer,
+                filePath,
+                snapshotFileName);
         }
 
-        private static AndConstraint<ObjectAssertions> MatchSnapshotInternal(ObjectAssertions assertions, Type deserializationType,
-            JsonSerializer? serializer, string? filePath, string? snapshotFileName)
+        private static AndConstraint<ObjectAssertions> MatchSnapshotInternal(
+            ObjectAssertions assertions,
+            Type deserializationType,
+            JsonSerializer? serializer,
+            string? filePath,
+            string? snapshotFileName)
         {
             var sourceFilePathNotNull = SourceFilePathWithoutExtension(filePath);
-            var fileNameNotNull = snapshotFileName ?? throw new ArgumentNullException(nameof(snapshotFileName));
-            var matcher = new SnapshotMatcher(new Snapshotter(sourceFilePathNotNull,
-                                                              fileNameNotNull));
+            var fileNameNotNull =
+                snapshotFileName ?? throw new ArgumentNullException(nameof(snapshotFileName));
+            var matcher = new SnapshotMatcher(
+                new Snapshotter(
+                    sourceFilePathNotNull,
+                    fileNameNotNull));
 
             return matcher.Match(assertions, deserializationType, serializer);
         }
@@ -54,7 +73,7 @@ namespace Flushot
         {
             // ReSharper disable once ExplicitCallerInfoArgument
             return MatchSnapshotInternal(assertions, typeof(T), serializer, filePath, snapshotFileName)
-                .And.BeAssignableTo<T>();
+                   .And.BeAssignableTo<T>();
         }
 
         public static AndWhichConstraint<ObjectAssertions, T> MatchNamedSnapshot<T>(
@@ -65,7 +84,7 @@ namespace Flushot
         {
             // ReSharper disable once ExplicitCallerInfoArgument
             return MatchSnapshotInternal(assertions, typeof(T), serializer, filePath, snapshotFileName)
-                .And.BeAssignableTo<T>();
+                   .And.BeAssignableTo<T>();
         }
     }
 }

@@ -38,9 +38,9 @@ namespace Flushot.UnitTest
 
             var sep = Path.DirectorySeparatorChar;
             act.Should()
-                .Throw<XunitException>()
-                .WithMessage(
-                    $"*_snapshots{sep}SnapshotExtensionsTest{sep}Should_include_snapshot_path_in_because.json*");
+               .Throw<XunitException>()
+               .WithMessage(
+                   $"*_snapshots{sep}SnapshotExtensionsTest{sep}Should_include_snapshot_path_in_because.json*");
         }
 
         [Fact]
@@ -97,7 +97,12 @@ namespace Flushot.UnitTest
         [Fact]
         public void Should_deserialize_snapshot()
         {
-            Action act = () => new NotDeserializableTest(new[] {123}).Should().MatchSnapshot();
+            Action act = () => new NotDeserializableTest(
+                    new[]
+                    {
+                        123
+                    }).Should()
+                      .MatchSnapshot();
 
             act.Should().Throw<XunitException>();
         }
@@ -106,26 +111,25 @@ namespace Flushot.UnitTest
         public void Should_return_generic_typed_constraint()
         {
             new Test("test").Should()
-                .MatchSnapshot<Test>()
-                .Subject.Property.Should()
-                .Be("test");
+                            .MatchSnapshot<Test>()
+                            .Subject.Property.Should()
+                            .Be("test");
         }
 
         [Fact]
         public void Should_deserialize_to_interface()
         {
             new TestWithInterface("test").Should()
-                .MatchSnapshot<ITest>()
-                .Subject.Property.Should()
-                .Be("test");
+                                         .MatchSnapshot<ITest>()
+                                         .Subject.Property.Should()
+                                         .Be("test");
         }
-
 
         [Fact]
         public void Should_allow_explicitly_named_snapshots()
         {
             new Test("hej").Should()
-                .MatchNamedSnapshot(snapshotFileName: "ExplicitlyNamed/Explicitly_named_snapshot");
+                           .MatchNamedSnapshot("ExplicitlyNamed/Explicitly_named_snapshot");
         }
 
         [Fact]
@@ -133,41 +137,44 @@ namespace Flushot.UnitTest
         {
             Action act = () =>
                 new Test("hej").Should()
-                    .MatchNamedSnapshot("ExplicitlyNamed/Changed_explicitly_named_snapshot");
+                               .MatchNamedSnapshot("ExplicitlyNamed/Changed_explicitly_named_snapshot");
 
             var sep = Path.DirectorySeparatorChar;
             act.Should()
-                .Throw<XunitException>()
-                .WithMessage(
-                    $"*SnapshotExtensionsTest{sep}ExplicitlyNamed{sep}Changed_explicitly_named_snapshot.json*");
+               .Throw<XunitException>()
+               .WithMessage(
+                   $"*SnapshotExtensionsTest{sep}ExplicitlyNamed{sep}Changed_explicitly_named_snapshot.json*");
         }
 
         [Fact]
         public void Should_allow_explicitly_named_snapshots_with_constraint()
         {
             new Test("xyzzy").Should()
-                .MatchNamedSnapshot<Test>(
-                    "ExplicitlyNamed/Explicitly_named_snapshot_with_constraint")
-                .And.NotBeNull();
+                             .MatchNamedSnapshot<Test>(
+                                 "ExplicitlyNamed/Explicitly_named_snapshot_with_constraint")
+                             .And.NotBeNull();
         }
 
         [Fact]
         public async Task Should_find_file_in_lambda_async()
         {
             Action act = () => new Test("hej").Should().MatchSnapshot();
-            await Task.Run(() =>
-            {
-                using var scope = new AssertionScope();
-                act.Invoke();
-                var messages = scope.Discard();
-                messages
-                    .Should()
-                    .SatisfyRespectively(
-                        message => message
-                            .Should().StartWith("JSON document has a different value at $.Property"),
-                        message => message
-                            .Should().StartWith("Expected member Property to be"));
-            });
+            await Task.Run(
+                () =>
+                {
+                    using var scope = new AssertionScope();
+                    act.Invoke();
+                    var messages = scope.Discard();
+                    messages
+                        .Should()
+                        .SatisfyRespectively(
+                            message => message
+                                       .Should()
+                                       .StartWith("JSON document has a different value at $.Property"),
+                            message => message
+                                       .Should()
+                                       .StartWith("Expected member Property to be"));
+                });
         }
 
         public class Test
@@ -211,7 +218,7 @@ namespace Flushot.UnitTest
                 bool hasExistingValue,
                 JsonSerializer serializer)
             {
-                var readerValue = (string?) reader.Value ?? throw new NullReferenceException();
+                var readerValue = (string?)reader.Value ?? throw new NullReferenceException();
                 return new Test(readerValue);
             }
         }
@@ -251,7 +258,7 @@ namespace Flushot.UnitTest
                 bool hasExistingValue,
                 JsonSerializer serializer)
             {
-                var readerValue = (string?) reader.Value ?? throw new NullReferenceException();
+                var readerValue = (string?)reader.Value ?? throw new NullReferenceException();
                 return new TestWithInterface(readerValue);
             }
         }

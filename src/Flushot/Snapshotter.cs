@@ -18,16 +18,16 @@ namespace Flushot
         {
             var testDirectory = Path.GetDirectoryName(path) ?? throw new ArgumentException(nameof(path));
             var testClass = Path.GetFileName(path) ?? throw new ArgumentException(nameof(path));
-            SnapshotPath = Path.GetFullPath(Path.Combine(testDirectory, "_snapshots", testClass, $"{fileName}.json"));
+            SnapshotPath =
+                Path.GetFullPath(
+                    Path.Combine(testDirectory, "_snapshots", testClass, $"{fileName}.json"));
             _snapshotDirectory = Path.GetDirectoryName(SnapshotPath);
         }
 
         public JToken? GetOrCreateSnapshot(object subject, JsonSerializer serializer)
         {
             if (!File.Exists(SnapshotPath))
-            {
                 CreateSnapshot(subject, serializer);
-            }
 
             using var fileStream = File.OpenRead(SnapshotPath);
             var snapshot =
@@ -44,18 +44,15 @@ namespace Flushot
             // us, but I've seen weird intermittent failures so adding lots of checks seems like a good
             // idea.
             if (!created.Exists)
-            {
                 throw new XunitException($"Failed to create snapshot directory {_snapshotDirectory}");
-            }
+
             using var output = File.OpenWrite(SnapshotPath);
             var writer = new StreamWriter(output, Encoding.UTF8);
             serializer.Serialize(new JsonTextWriter(writer), subject);
             writer.Flush();
             // Again this should never happen.
             if (!File.Exists(SnapshotPath))
-            {
                 throw new XunitException($"Failed to create snapshot file {SnapshotPath}");
-            }
         }
     }
 }

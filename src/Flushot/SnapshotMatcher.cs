@@ -18,7 +18,9 @@ namespace Flushot
             _snapshotter = snapshotter;
         }
 
-        public AndConstraint<ObjectAssertions> Match(ObjectAssertions assertions, Type deserializationType,
+        public AndConstraint<ObjectAssertions> Match(
+            ObjectAssertions assertions,
+            Type deserializationType,
             JsonSerializer? serializer)
         {
             serializer ??= new JsonSerializer();
@@ -28,12 +30,13 @@ namespace Flushot
 
             var actualJson = ToJTokenUsingSerializer(assertions, serializer);
 
-            actualJson.Should().BeEquivalentTo(snapshot, $"snapshot {_snapshotter.SnapshotPath} doesn't match");
+            actualJson.Should()
+                      .BeEquivalentTo(snapshot, $"snapshot {_snapshotter.SnapshotPath} doesn't match");
 
             var deserializedSnapshot = snapshot?.ToObject(deserializationType, serializer);
             deserializedSnapshot.Should()
-                .BeOfType(subject.GetType())
-                .And.BeEquivalentTo(subject);
+                                .BeOfType(subject.GetType())
+                                .And.BeEquivalentTo(subject);
 
             return deserializedSnapshot.Should().BeAssignableTo(deserializationType);
         }
@@ -47,7 +50,9 @@ namespace Flushot
             var bytes = buffer.ToArray();
             var input = new MemoryStream(bytes);
 
-            var actualJson = serializer.Deserialize<JToken>(new JsonTextReader(new StreamReader(input, Encoding.UTF8)));
+            var actualJson =
+                serializer.Deserialize<JToken>(
+                    new JsonTextReader(new StreamReader(input, Encoding.UTF8)));
             return actualJson;
         }
     }
