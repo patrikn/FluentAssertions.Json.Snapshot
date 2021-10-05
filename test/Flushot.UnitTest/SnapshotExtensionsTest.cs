@@ -181,7 +181,7 @@ namespace Flushot.UnitTest
                                        .StartWith("JSON document has a different value at $.Property"),
                             message => message
                                        .Should()
-                                       .StartWith("Expected member Property to be"));
+                                       .StartWith("Expected property deserializedSnapshot.Property to be"));
                 });
         }
 
